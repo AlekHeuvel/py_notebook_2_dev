@@ -631,7 +631,7 @@ Een optie om de simulatie te verbeteren is de tijdstap $\Delta t$ kleiner te mak
 
 We willen ook graag weten waar het deeltje is geweest, dat is in onderstaande code toegevoegd.
 
-```python 
+```python
 # Maken van de class met versnelling
 class ParticleClass:
     def __init__(self, m, v, r, R):
@@ -894,3 +894,180 @@ ani = FuncAnimation(fig, update, frames=range(num_steps), init_func=init, blit=T
 from IPython.display import HTML
 HTML(ani.to_jshtml())
 ```
+
+Terug naar ons vraagstuk... 
+we willen een simulatie waarbij een deeltje met een massa $m_1$ en snelheid $v_1$ op een andere stilstaand deeltje met massa $m_2$ botst.
+Deeltje twee beweegt naar een muur, botst tegen de muur en beweegt richting deeltje 1 en botst tegen dit deeltje.
+Hoe vaak vindt deze botsing plaats als functie van de massa verhouding $\frac{m_1}{m_2}$?
+
+Daarvoor moeten we even terug naar het botsingsmodel zoals geleerd in [*Klassieke Mechanica*.](https://freekpols.github.io/Mechanica/content/classic/collisions)
+Bij elastische botsingen is zowel het impulsmoment als de kinetische energie behouden. 
+
+$$
+    \sum_i \vec{p}_i^{before} = \sum_i \vec{p}_i^{after}
+$$
+
+$$ 
+    E_{kin, before} = E_{kin, after} 
+$$
+
+Voor een botsing met twee deeltjes levert dit een analytische oplossing:
+
+$$
+\begin{align}
+\mathbf{v}'_1 &= \mathbf{v}_1-\frac{2 m_2}{m_1+m_2} \ \frac{\langle \mathbf{v}_1-\mathbf{v}_2,\,\mathbf{x}_1-\mathbf{x}_2\rangle}{\|\mathbf{x}_1-\mathbf{x}_2\|^2} \ (\mathbf{x}_1-\mathbf{x}_2),
+\\
+\mathbf{v}'_2 &= \mathbf{v}_2-\frac{2 m_1}{m_1+m_2} \ \frac{\langle \mathbf{v}_2-\mathbf{v}_1,\,\mathbf{x}_2-\mathbf{x}_1\rangle}{\|\mathbf{x}_2-\mathbf{x}_1\|^2} \ (\mathbf{x}_2-\mathbf{x}_1)
+\end{align}
+$$
+
+we vragen je natuurlijk niet om deze vergelijking zelf te schrijven in Python, maar die vergelijking operationaliseren we hieronder wel.
+
+```{exercise} Lezen van code
+:label: ex-deeltjes-10
+
+Lees onderstaande code, en probeer wijs te worden wat elk deel van de code doet. 
+In het volgende hoofdstuk wordt de code net iets anders gestructureerd en uitgebreider uitgelegd.
+```
+
+```{exercise} Toevoegen van een counter
+:label: ex-deeltjes-11
+
+Als je de code runt, zie je dat het botsingsmodel goed lijkt te werken.
+Er is zelfs een counter toegevoegd die het aantal botsingen dat plaats vindt zou moeten weergeven.
+Maar in de code wordt de counter nog niet geupdate.
+
+Voeg op de juiste plaats(en) een update van de counter toe (per botsing moet de counter 1 omhoog gezet worden).
+```
+
+```{exercise} Controleer
+:label: ex-deeltjes-12
+
+Controleer de uitspraak in de video dat $\pi$ in eens opduikt bij de massaverhouding. 
+
+Wat is de beperkende factor in ons script om het aantal botsingen als functie van de massaverhouding te onderzokeen?
+```
+
+```{solution} ex-deeltjes-12
+Jouw antwoord
+```
+
+
+```python
+import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib.animation import FuncAnimation
+
+class ParticleClass:
+    def __init__(self, m, v, r, R):
+        self.m = m                  # mass of the particle
+        self.v = np.array(v, dtype=float)  # velocity vector
+        self.r = np.array(r, dtype=float)  # position vector
+        self.R = R                         # radius of the particle
+
+    def update_position(self):
+        self.r += self.v * dt 
+
+    def collide_detection(self, other):
+        return np.linalg.norm(self.r - other.r) <= (self.R + other.R)
+
+# Simulation parameters
+dt = 0.1         # time step
+num_steps = 530  # number of time steps
+m1 = 1.0
+m2 = 1.0
+
+particleA = ParticleClass(m=m1, v=[0, 0], r=[-4.0, 0.0],R=0.45)  
+particleB = ParticleClass(m=m2, v=[-1, 0], r=[-2.0, 0.0],R=0.45)  
+
+
+# Create the figure and axis
+
+fig, ax = plt.subplots()
+
+ax.set_xlim(-10, 10)
+ax.set_ylim(-10, 10)
+ax.set_aspect('equal')
+ax.set_title("Particle Animation")
+ax.set_xlabel("x")
+ax.set_ylabel("y")
+dot, = ax.plot([], [], 'ro', markersize=10); # semicolon to suppress output
+
+counter = 0
+
+# Create the particle as a red dot
+dotA, = ax.plot([], [], 'ro', markersize=10)
+dotB, = ax.plot([], [], 'bo', markersize=10)
+
+counter_text = ax.text(-9.5, 9, "")
+
+# Initialization function for animation
+def init():
+    dot.set_data([], [])
+    return dot,
+
+# Update function for each frame
+def update(frame):
+    global counter
+    particleA.update_position()
+    particleB.update_position()
+
+    dotA.set_data([particleA.r[0]], [particleA.r[1]])
+    dotB.set_data([particleB.r[0]], [particleB.r[1]])
+
+    counter_text.set_text(f"Collisions: {counter}")
+
+    #collision detection and response
+    if particleA.collide_detection(particleB):
+        vA, vB, mA, mB, rA, rB = particleA.v, particleB.v, particleA.m, particleB.m, particleA.r, particleB.r
+        vA_new = vA - 2 * mB / (mA + mB) * np.dot(vA - vB, rA - rB) / (1e-12+np.linalg.norm(rA - rB))**2 * (rA - rB)
+        vB_new = vB - 2 * mA / (mA + mB) * np.dot(vB - vA, rB - rA) / (1e-12+np.linalg.norm(rB - rA))**2 * (rB - rA)
+        particleA.v = vA_new
+        particleB.v = vB_new
+        ### begin-solution
+        counter += 1
+        ### end-solution
+
+
+    # wall collision detection and response
+    if particleA.r[0]**2>100: # Check if particle is outside the bounds, np.abs could be used but is slower
+        particleA.v[0] = -particleA.v[0]
+        ### begin-solution
+        counter += 1
+        ### end-solution
+    if particleA.r[1]**2>100: 
+        particleA.v[1] = -particleA.v[1]
+        ### begin-solution
+        counter += 1
+        ### end-solution
+
+    dot.set_data([particleB.r[0]], [particleB.r[1]])
+    if particleB.r[0]**2>100: 
+        particleB.v[0] = -particleB.v[0]
+        ### begin-solution
+        # distractor
+        ### end-solution
+    if particleB.r[1]**2>100: 
+        particleB.v[1] = -particleB.v[1]
+        ### begin-solution
+        # distractor
+        ### end-solution
+
+    return dot, counter_text
+
+# Create animation
+ani = FuncAnimation(fig, update, frames=range(200), init_func=init, blit=True, interval=50)
+
+# For Jupyter notebook:
+from IPython.display import HTML
+HTML(ani.to_jshtml())
+```
+
+Pas de bovenstaande code aan zodat $m_1 = 1$ en $m_2 = 100$. Run de code en geef hieronder als integer aan hoeveel botsingen totaal hebben plaats gevonden.
+
+
+```python tags=["NB1_eindantwoord"]
+num_botsingen = # your answer
+```
+
+Klaar? Bekijk de twee versies, kies de beste en doe een `Pull Request` naar `Main`. Je partner reviewt de code, doet eventueel suggesties. Je partner is ook degene die uiteindelijke  de Pull Request goed keurt.
