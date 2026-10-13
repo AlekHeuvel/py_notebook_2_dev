@@ -1067,7 +1067,10 @@ Pas de bovenstaande code aan zodat $m_1 = 1$ en $m_2 = 100$. Run de code en geef
 
 
 ```python tags=["NB1_eindantwoord"]
-num_botsingen = # your answer
+num_botsingen = 
+### begin-solution 
+num_botsingen = 22
+### end-solution
 ```
 
 Klaar? Bekijk de twee versies, kies de beste en doe een `Pull Request` naar `Main`. Je partner reviewt de code, doet eventueel suggesties. Je partner is ook degene die uiteindelijke  de Pull Request goed keurt.
