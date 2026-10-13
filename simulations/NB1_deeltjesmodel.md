@@ -1044,14 +1044,9 @@ def update(frame):
     dot.set_data([particleB.r[0]], [particleB.r[1]])
     if particleB.r[0]**2>100: 
         particleB.v[0] = -particleB.v[0]
-        ### begin-solution
-        # distractor
-        ### end-solution
+
     if particleB.r[1]**2>100: 
         particleB.v[1] = -particleB.v[1]
-        ### begin-solution
-        # distractor
-        ### end-solution
 
     return dot, counter_text
 
@@ -1063,14 +1058,18 @@ from IPython.display import HTML
 HTML(ani.to_jshtml())
 ```
 
-Pas de bovenstaande code aan zodat $m_1 = 1$ en $m_2 = 100$. Run de code en geef hieronder als integer aan hoeveel botsingen totaal hebben plaats gevonden.
+```{exercise}
+Pas de bovenstaande code aan zodat $m_1 = 1$ en $m_2 = 50$. Run de code en geef hieronder als integer aan hoeveel botsingen totaal hebben plaats gevonden. Let op! Het kan zijn dat je voor het precies antwoord nog wat dingen moet aanpassen...
+```
 
 
 ```python tags=["NB1_eindantwoord"]
-
+num_botsingen =
 ### begin-solution 
 num_botsingen = 22
 ### end-solution
 ```
 
+```{exercise}
 Klaar? Bekijk de twee versies, kies de beste en doe een `Pull Request` naar `Main`. Je partner reviewt de code, doet eventueel suggesties. Je partner is ook degene die uiteindelijke  de Pull Request goed keurt.
+```
