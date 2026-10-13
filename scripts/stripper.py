@@ -1,7 +1,7 @@
 from pathlib import Path
 import re
 
-SOURCE = Path("docs")
+SOURCE = Path("simulations")
 OUTPUT = Path("output")
 
 for file in SOURCE.rglob("*.md"):
