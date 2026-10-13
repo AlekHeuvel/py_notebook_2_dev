@@ -37,7 +37,11 @@ jobs:
       - name: Copy Markdown files
         run: |
           mkdir -p destination/docs
-          cp -r output/. destination/docs/
+          rsync -av \
+            --include='*/' \
+            --include='*.md' \
+            --exclude='*' \
+            simulations/ destination/docs/
 
       # Commit en push naar repo2
       - name: Commit and push
