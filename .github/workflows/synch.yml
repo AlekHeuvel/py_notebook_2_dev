@@ -41,7 +41,7 @@ jobs:
             --include='*/' \
             --include='*.md' \
             --exclude='*' \
-            simulations/ destination/simulations/
+            output/ destination/simulations/
 
       # Commit en push naar repo2
       - name: Commit and push
