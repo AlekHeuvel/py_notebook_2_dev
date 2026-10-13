@@ -10,7 +10,7 @@ for file in SOURCE.rglob("*.md"):
     # Verwijder interne secties
     content = re.sub(
         r"### begin-solution.*?### end-solution\n",
-        "# your code here",
+        "# your code here\\n",
         content,
         flags=re.DOTALL
     )
