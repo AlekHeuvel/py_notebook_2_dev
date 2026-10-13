@@ -1,0 +1,56 @@
+name: Release Documentation
+
+on:
+  push:
+    tags:
+      - 'release*'
+
+jobs:
+  publish-docs:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout repo1
+      - name: Checkout source repository
+        uses: actions/checkout@v4
+
+      # Python installeren
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      # Markdown-bestanden verwerken
+      - name: Process Markdown files
+        run: python scripts/stripper.py
+
+      # Checkout destination repo
+      - name: Checkout destination repository
+        uses: actions/checkout@v4
+        with:
+          repository: Contemporary-Physicslab/thermolab
+          token: ${{ secrets.REPO2_PAT }}
+          path: destination
+          ref: main
+
+      # Markdown-bestanden kopiëren
+      - name: Copy Markdown files
+        run: |
+          mkdir -p destination/docs
+          cp -r output/. destination/docs/
+
+      # Commit en push naar repo2
+      - name: Commit and push
+        working-directory: destination
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add docs/
+
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "Update documentation from repo1"
+            git push origin main
+          fi
