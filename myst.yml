@@ -16,7 +16,7 @@ project:
     - file: simulations/repostart.md
     - file: simulations/intro.md
     - file: simulations/NB1_deeltjesmodel.md
-    - file: simulations/opdracht.ipynb
+    - file: simulations/NB2_brownianmotion.md
     - title: Appendix
       children:
       - file: codechecks.md

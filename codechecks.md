@@ -1,1 +1,4 @@
-# Codechecks
+# Notebook checks
+
+| Check | Status | Details |
+|-------|--------|---------|

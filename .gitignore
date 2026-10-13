@@ -7,3 +7,4 @@ _build
 
 # Jupyter Notebook checkpoints
 .ipynb_checkpoints
+__pycache__/
