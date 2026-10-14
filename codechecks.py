@@ -104,16 +104,19 @@ NB1_cell_checks = [
     ("NB1_eindantwoord", check_eindantwoord, "num_botsingen"),
 ]
 
+
 NB2_cell_checks = [
     ("NB2_particle_class",
-        check_brownian_particle_class,
-        "ParticleClass", ),
+     check_brownian_particle_class,
+     "ParticleClass"),
+
     ("NB2_collision_detection",
-        check_brownian_collision_detection,
-        "collide_detection",),
+     check_brownian_collision_detection,
+     "ParticleClass"),
+
     ("NB2_particle_collision",
-        check_brownian_elastic_collision,
-        "particle_collision",),
+     check_brownian_elastic_collision,
+     "ParticleClass"),
 ]
 
 cell_checks = {"NB1": NB1_cell_checks, "NB2": NB2_cell_checks}
