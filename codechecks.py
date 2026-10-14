@@ -112,11 +112,11 @@ NB2_cell_checks = [
 
     ("NB2_collision_detection",
      check_brownian_collision_detection,
-     "ParticleClass"),
+     "collide_detection"),
 
     ("NB2_particle_collision",
      check_brownian_elastic_collision,
-     "ParticleClass"),
+     "particle_collision"),
 ]
 
 cell_checks = {"NB1": NB1_cell_checks, "NB2": NB2_cell_checks}
