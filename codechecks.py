@@ -13,6 +13,10 @@ from NB1 import (
     check_eindantwoord,
 )
 
+from NB2 import (
+    _,  
+)
+
 
 def get_tagged_cell(notebook_path, tag):
     nb = jupytext.read(notebook_path)
@@ -39,7 +43,7 @@ def get_tagged_cell(notebook_path, tag):
 results = []
 
 
-def check_cell(name, notebook_path, test_function, variable=None):
+def check_cell(notebook_path, name, test_function, variable=None):
 
     try:
         # Find the tagged cell
@@ -86,15 +90,30 @@ def check_cell(name, notebook_path, test_function, variable=None):
 
 
 # Run all checks
-notebook_1 = "simulations/NB1_deeltjesmodel.md"
+notebook_file_paths = {
+    "NB1": "simulations/NB1_deeltjesmodel.md",
+    "NB2": "simulations/NB2_brownianmotion.md",
+}
 
-check_cell("NB1_doorlopendedoos", notebook_1, check_doorlopende_doos)
+NB1_cell_checks = [
+    ("NB1_doorlopendedoos", check_doorlopende_doos),
+    ("NB1_hardewand", check_harde_wanden),
+    ("NB1_botsingsvoorwaarde", check_botsingsvoorwaarde),
+    ("NB1_eindantwoord", check_eindantwoord, "num_botsingen"),
+]
+NB2_cell_checks = [
+    ("NB2_doorlopendedoos", check_doorlopende_doos),
+    ("NB2_hardewand", check_harde_wanden),
+    ("NB2_botsingsvoorwaarde", check_botsingsvoorwaarde),
+    ("NB2_eindantwoord", check_eindantwoord, "num_botsingen"),
+]
 
-check_cell("NB1_hardewand", notebook_1, check_harde_wanden)
+cell_checks = {"NB1": NB1_cell_checks, "NB2": NB2_cell_checks}
 
-check_cell("NB1_botsingsvoorwaarde", notebook_1, check_botsingsvoorwaarde)
+for notebook, path in notebook_file_paths.items():
+    for name, test_function, *args in cell_checks[notebook]:
+        check_cell(path, name, test_function, *args)
 
-check_cell("NB1_eindantwoord", notebook_1, check_eindantwoord, variable="num_botsingen")
 
 
 ##### GENERATE MARKDOWN REPORT #####
