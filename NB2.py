@@ -3,10 +3,9 @@
 import numpy as np
 
 
-## First check: Particle class
+## First check: ParticleClass
 def check_brownian_particle_class(ParticleClass):
-
-    particle = ParticleClass(
+    p = ParticleClass(
         m=20.0,
         v=[0.0, 0.0],
         r=[1.0, -2.0],
@@ -14,18 +13,21 @@ def check_brownian_particle_class(ParticleClass):
         c="red"
     )
 
-    assert particle.m == 20.0, "Incorrect particle mass"
-    np.testing.assert_allclose(particle.v, [0.0, 0.0])
-    np.testing.assert_allclose(particle.r, [1.0, -2.0])
-    assert particle.R == 0.5, "Incorrect particle radius"
-    assert particle.c == "red", "Incorrect particle color"
-
-    assert particle.kin_energy == 0.0, "Incorrect kinetic energy"
-    np.testing.assert_allclose(particle.momentum, [0.0, 0.0])
+    assert p.m == 20.0
+    np.testing.assert_allclose(p.v, [0.0, 0.0])
+    np.testing.assert_allclose(p.r, [1.0, -2.0])
+    assert p.R == 0.5
+    assert p.c == "red"
+    assert p.kin_energy == 0.0
+    np.testing.assert_allclose(p.momentum, [0.0, 0.0])
 
 
 ## Second check: Collision detection
-def check_brownian_collision_detection(ParticleClass):
+def check_brownian_collision_detection(collide_detection):
+    class FakeParticle:
+        def __init__(self, position, radius):
+            self.r = np.array(position, dtype=float)
+            self.R = radius
 
     test_cases = [
         ([0, 0], 1, [0, 0], 1, True),
@@ -37,46 +39,43 @@ def check_brownian_collision_detection(ParticleClass):
     ]
 
     for r1, R1, r2, R2, expected in test_cases:
+        p1 = FakeParticle(r1, R1)
+        p2 = FakeParticle(r2, R2)
 
-        particle1 = ParticleClass(m=1, v=[0, 0], r=r1, R=R1)
-        particle2 = ParticleClass(m=1, v=[0, 0], r=r2, R=R2)
-
-        result = particle1.collide_detection(particle2)
+        result = collide_detection(p1, p2)
 
         assert bool(result) == expected, (
-            f"Incorrect collision detection for "
-            f"r1={r1}, R1={R1}, r2={r2}, R2={R2}. "
-            f"Expected {expected}, got {result}."
+            f"Collision detection failed for {r1}, {r2}: "
+            f"expected {expected}, got {result}"
         )
 
 
-## Third check: Elastic collisions
-def check_brownian_elastic_collision(ParticleClass):
+## Third check: Elastic collision
+def check_brownian_elastic_collision(particle_collision):
+    class FakeParticle:
+        def __init__(self, m, v, r):
+            self.m = m
+            self.v = np.array(v, dtype=float)
+            self.r = np.array(r, dtype=float)
 
-    particle1 = ParticleClass(
-        m=1.0, v=[1.0, 0.0], r=[-0.5, 0.0], R=0.5
-    )
-    particle2 = ParticleClass(
-        m=1.0, v=[-1.0, 0.0], r=[0.5, 0.0], R=0.5
-    )
+    p1 = FakeParticle(1.0, [1.0, 0.0], [-0.5, 0.0])
+    p2 = FakeParticle(1.0, [-1.0, 0.0], [0.5, 0.0])
 
-    momentum_before = particle1.momentum + particle2.momentum
-    energy_before = particle1.kin_energy + particle2.kin_energy
-
-    particle1.particle_collision(particle2)
-
-    momentum_after = particle1.momentum + particle2.momentum
-    energy_after = particle1.kin_energy + particle2.kin_energy
-
-    np.testing.assert_allclose(
-        momentum_after, momentum_before,
-        err_msg="Momentum is not conserved"
+    momentum_before = p1.m * p1.v + p2.m * p2.v
+    energy_before = (
+        0.5 * p1.m * np.dot(p1.v, p1.v)
+        + 0.5 * p2.m * np.dot(p2.v, p2.v)
     )
 
-    np.testing.assert_allclose(
-        energy_after, energy_before,
-        err_msg="Kinetic energy is not conserved"
+    particle_collision(p1, p2)
+
+    momentum_after = p1.m * p1.v + p2.m * p2.v
+    energy_after = (
+        0.5 * p1.m * np.dot(p1.v, p1.v)
+        + 0.5 * p2.m * np.dot(p2.v, p2.v)
     )
 
-    np.testing.assert_allclose(particle1.v, [-1.0, 0.0])
-    np.testing.assert_allclose(particle2.v, [1.0, 0.0])
+    np.testing.assert_allclose(momentum_after, momentum_before)
+    np.testing.assert_allclose(energy_after, energy_before)
+    np.testing.assert_allclose(p1.v, [-1.0, 0.0])
+    np.testing.assert_allclose(p2.v, [1.0, 0.0])
