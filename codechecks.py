@@ -13,6 +13,12 @@ from NB1 import (
     check_eindantwoord,
 )
 
+from NB2 import (
+    check_brownian_particle_class,
+    check_brownian_collision_detection,
+    check_brownian_elastic_collision,
+)
+
 
 def get_tagged_cell(notebook_path, tag):
     nb = jupytext.read(notebook_path)
@@ -97,7 +103,17 @@ NB1_cell_checks = [
     ("NB1_botsingsvoorwaarde", check_botsingsvoorwaarde),
     ("NB1_eindantwoord", check_eindantwoord, "num_botsingen"),
 ]
+
 NB2_cell_checks = [
+    ("NB2_particle_class",
+        check_brownian_particle_class,
+        "ParticleClass", ),
+    ("NB2_collision_detection",
+        check_brownian_collision_detection,
+        "collide_detection",),
+    ("NB2_particle_collision",
+        check_brownian_elastic_collision,
+        "particle_collision",),
 ]
 
 cell_checks = {"NB1": NB1_cell_checks, "NB2": NB2_cell_checks}
