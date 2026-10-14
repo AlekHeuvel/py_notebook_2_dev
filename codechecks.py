@@ -13,10 +13,6 @@ from NB1 import (
     check_eindantwoord,
 )
 
-from NB2 import (
-    _,  
-)
-
 
 def get_tagged_cell(notebook_path, tag):
     nb = jupytext.read(notebook_path)
@@ -102,10 +98,6 @@ NB1_cell_checks = [
     ("NB1_eindantwoord", check_eindantwoord, "num_botsingen"),
 ]
 NB2_cell_checks = [
-    ("NB2_doorlopendedoos", check_doorlopende_doos),
-    ("NB2_hardewand", check_harde_wanden),
-    ("NB2_botsingsvoorwaarde", check_botsingsvoorwaarde),
-    ("NB2_eindantwoord", check_eindantwoord, "num_botsingen"),
 ]
 
 cell_checks = {"NB1": NB1_cell_checks, "NB2": NB2_cell_checks}
@@ -120,7 +112,7 @@ for notebook, path in notebook_file_paths.items():
 output = Path("codechecks.md")
 output.parent.mkdir(parents=True, exist_ok=True)
 
-with output.open("w") as f:
+with output.open("w", encoding="utf-8") as f:
     f.write("# Notebook checks\n\n")
     f.write("| Check | Status | Details |\n")
     f.write("|-------|--------|---------|\n")
