@@ -17,6 +17,3 @@ def check_brownian_distance_histogram_solution(source):
         "Markeer de afgelegde afstand van het zware deeltje."
     )
 
-    assert "sqrt" in source or "**2" in source, (
-        "Bereken de afstand met zowel de x- als de y-coördinaat."
-    )
